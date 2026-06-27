@@ -42,7 +42,24 @@ import SiteHeader from '../components/SiteHeader.astro'
     </section>
 
     <section class="max-w-3xl mx-auto px-6 pb-16">
-      <h2 class="text-2xl font-bold text-white tracking-tight">3. Persisting data</h2>
+      <h2 class="text-2xl font-bold text-white tracking-tight">3. Point your client SDK at the Engine</h2>
+      <p class="mt-3 text-gray-400">
+        The <code class="text-green-500">Crashguard.Client</code> SDK doesn't assume a URL — you construct the
+        underlying <code class="text-green-500">RestClient</code> yourself and pass it in, pointed at whatever host
+        port you mapped to the container's <code class="text-green-500">5050</code>:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>var restClient = new RestClient("http://localhost:8050");
+var client = new CrashguardClient(restClient);</code></pre>
+      <p class="mt-4 text-gray-400">
+        This is a different URL than the Admin App's <code class="text-green-500">Admin portal URL</code> setting in
+        step 5 below — the SDK runs inside your own services and talks to the Engine directly, so it needs the
+        Engine's <span class="text-white">published host port</span> (<code class="text-green-500">8050</code> in
+        the examples above), not the Admin App's port or address.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">4. Persisting data</h2>
       <p class="mt-3 text-gray-400">
         <span class="text-green-500 font-semibold">CrashGuard</span> stores everything in a SQLite database at
         <code class="text-green-500">/data/crashguard.db</code> inside the container. That path is declared as a
@@ -67,7 +84,7 @@ import SiteHeader from '../components/SiteHeader.astro'
     </section>
 
     <section class="max-w-3xl mx-auto px-6 pb-24">
-      <h2 class="text-2xl font-bold text-white tracking-tight">4. docker-compose, if you prefer</h2>
+      <h2 class="text-2xl font-bold text-white tracking-tight">5. docker-compose, if you prefer</h2>
       <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>services:
   crashguard:
     image: crashguardinc/crashguard.io:latest
@@ -85,7 +102,7 @@ volumes:
     </section>
 
     <section class="max-w-3xl mx-auto px-6 pb-24">
-      <h2 class="text-2xl font-bold text-white tracking-tight">5. Set the admin portal URL</h2>
+      <h2 class="text-2xl font-bold text-white tracking-tight">6. Set the admin portal URL</h2>
       <p class="mt-3 text-gray-400">
         Open the Admin App and go to <span class="text-white">Settings</span>, then set
         <span class="text-white">Admin portal URL</span> to whatever address you actually use to reach it in your
