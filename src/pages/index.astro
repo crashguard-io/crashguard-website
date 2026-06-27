@@ -45,25 +45,14 @@ import SiteHeader from '../components/SiteHeader.astro'
           a failure looks like in a sea of log lines and metrics. <span class="text-green-500 font-semibold">CrashGuard</span> is different.
         </p>
       </div>
-      <div class="grid sm:grid-cols-2 gap-6">
-        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
-          <h3 class="text-gray-300 font-semibold">Traditional monitoring</h3>
-          <ul class="mt-3 space-y-2 text-sm text-gray-500 list-disc list-inside">
-            <li>Reactive — relies on someone noticing an anomaly in a dashboard or log stream</li>
-            <li>Requires you to define what "broken" looks like ahead of time, across every system</li>
-            <li>Blind to workflows that cross multiple services with no shared trace</li>
-            <li>Tells you something is wrong, rarely confirms that something specific went right</li>
-          </ul>
-        </div>
-        <div class="bg-gray-900 border border-green-500/30 rounded-xl p-6">
-          <h3 class="text-green-400 font-semibold">CrashGuard</h3>
-          <ul class="mt-3 space-y-2 text-sm text-gray-300 list-disc list-inside">
-            <li>Proactive — you assert success up front, CrashGuard watches for its absence</li>
-            <li>One canary per workflow instance, regardless of how many systems it touches</li>
-            <li>Alerts the instant a deadline passes, with no anomaly detection guesswork</li>
-            <li>Confirms the workflow-specific definition of "done" — not just "it logged something"</li>
-          </ul>
-        </div>
+      <div class="bg-gray-900 border border-green-500/30 rounded-xl p-6 max-w-md mx-auto">
+        <h3 class="text-green-400 font-semibold">CrashGuard</h3>
+        <ul class="mt-3 space-y-2 text-sm text-gray-300 list-disc list-inside">
+          <li>Proactive — you assert success up front, CrashGuard watches for its absence</li>
+          <li>One canary per workflow instance, regardless of how many systems it touches</li>
+          <li>Alerts the instant a deadline passes, with no anomaly detection guesswork</li>
+          <li>Confirms the workflow-specific definition of "done" — not just "it logged something"</li>
+        </ul>
       </div>
     </section>
 
