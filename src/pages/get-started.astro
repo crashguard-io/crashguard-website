@@ -19,7 +19,7 @@ import SiteHeader from '../components/SiteHeader.astro'
       <p class="mt-3 text-gray-400">
         The image is published to Docker Hub on every release.
       </p>
-      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker pull russellcurry/crashguard.io:latest</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker pull crashguardinc/crashguard.io:latest</code></pre>
     </section>
 
     <section class="max-w-3xl mx-auto px-6 pb-16">
@@ -33,7 +33,7 @@ import SiteHeader from '../components/SiteHeader.astro'
   -p 8080:80 \
   -p 8050:5050 \
   -v crashguard-data:/data \
-  russellcurry/crashguard.io:latest</code></pre>
+  crashguardinc/crashguard.io:latest</code></pre>
       <p class="mt-4 text-gray-400">
         Once it's running, open <code class="text-green-500">http://localhost:8080</code> for the Admin App. Point
         your services at <code class="text-green-500">http://localhost:8050</code> to create, checkpoint, and
@@ -58,7 +58,7 @@ import SiteHeader from '../components/SiteHeader.astro'
   -p 8080:80 \
   -p 8050:5050 \
   -v /home/me/crashguard-data:/data \
-  russellcurry/crashguard.io:latest</code></pre>
+  crashguardinc/crashguard.io:latest</code></pre>
       <p class="mt-4 text-gray-400">
         Either way, <span class="text-white">don't run with <code class="text-green-500">--rm</code></span> if you
         rely on the anonymous volume — removing the container without a named or bind-mounted volume can leave you
@@ -70,7 +70,7 @@ import SiteHeader from '../components/SiteHeader.astro'
       <h2 class="text-2xl font-bold text-white tracking-tight">4. docker-compose, if you prefer</h2>
       <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>services:
   crashguard:
-    image: russellcurry/crashguard.io:latest
+    image: crashguardinc/crashguard.io:latest
     ports:
       - "8080:80"
       - "8050:5050"
