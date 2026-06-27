@@ -1,0 +1,335 @@
+---
+import Layout from '../layouts/Layout.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+---
+
+<Layout title="Documentation — CrashGuard.io">
+  <SiteHeader />
+  <main class="pt-16">
+    <section class="max-w-3xl mx-auto px-6 pt-24 pb-12 text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold text-white tracking-tight">Documentation</h1>
+      <p class="mt-6 text-lg text-gray-400">
+        How to create notification channels and route them to a connector, how to start, checkpoint, and resolve
+        canaries from the C#, Go, or Rust SDK, and how to wire up a verifier the Engine can call when one goes
+        overdue.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-4">
+      <div class="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-lg p-2 w-fit">
+        <span class="text-sm text-gray-400 px-2">SDK examples:</span>
+        <button data-lang-btn="csharp" class="px-3 py-1 rounded text-sm font-medium transition-colors">C#</button>
+        <button data-lang-btn="go" class="px-3 py-1 rounded text-sm font-medium transition-colors">Go</button>
+        <button data-lang-btn="rust" class="px-3 py-1 rounded text-sm font-medium transition-colors">Rust</button>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Creating a notification channel</h2>
+      <p class="mt-3 text-gray-400">
+        A channel is a named destination for alerts — it pairs a <span class="text-white">connector</span> (Slack,
+        PagerDuty, or email) with that connector's config, like a webhook URL or integration key. Create channels
+        from the Admin App's channel editor, then attach them to a canary type so its alerts route there.
+      </p>
+      <img
+        src="/cg-create-channel.png"
+        alt="The CrashGuard Admin App channel editor, creating a Slack channel with a webhook URL"
+        width="2006"
+        height="1392"
+        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <p class="mt-4 text-gray-400">
+        Under the hood, this calls <code class="text-green-500">POST /api/channels</code> with a name, a connector
+        type, and that connector's config:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`{
+  "name": "on-call-slack",
+  "type": "slack",
+  "config": { "webhookUrl": "https://hooks.slack.com/services/..." }
+}`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        <code class="text-green-500">type</code> must be one of <code class="text-green-500">slack</code>,
+        <code class="text-green-500">pagerduty</code>, or <code class="text-green-500">email</code> — each expects a
+        different shape for <code class="text-green-500">config</code>:
+      </p>
+      <ul class="mt-4 text-gray-400 list-disc list-inside space-y-2">
+        <li><code class="text-green-500">slack</code> — <code class="text-green-500">{`{ webhookUrl: string }`}</code></li>
+        <li><code class="text-green-500">pagerduty</code> — <code class="text-green-500">{`{ integrationKey: string }`}</code></li>
+        <li><code class="text-green-500">email</code> — <code class="text-green-500">{`{ address: string }`}</code></li>
+      </ul>
+      <p class="mt-4 text-gray-400">
+        The response includes the new channel's <code class="text-green-500">id</code>. Pass that id in a canary
+        type's <code class="text-green-500">defaultChannelIds</code> to have every canary of that type alert
+        through it.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Creating a canary type</h2>
+      <p class="mt-3 text-gray-400">
+        A canary type defines what you're watching for — its name, how long it can go without a check-in before
+        it's overdue, its severity, and which channels it alerts through by default. Canaries you start from the
+        SDK reference a canary type by name.
+      </p>
+      <img
+        src="/cg-create-canary.png"
+        alt="The CrashGuard Admin App canary type editor, configuring a timeout, severity, and default channels"
+        width="2006"
+        height="1392"
+        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <p class="mt-4 text-gray-400">
+        Under the hood, this calls <code class="text-green-500">POST /api/canary-types</code>:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`{
+  "name": "nightly-export",
+  "timeout": 1800,
+  "extendLimit": 2,
+  "severity": "Critical",
+  "metadataSchema": null,
+  "verifierUrl": null,
+  "rules": [],
+  "defaultChannelIds": [4]
+}`}</code></pre>
+      <ul class="mt-4 text-gray-400 list-disc list-inside space-y-2">
+        <li><code class="text-green-500">timeout</code> — seconds a canary of this type can stay pending before it's overdue.</li>
+        <li><code class="text-green-500">extendLimit</code> — how many times a verifier's <code class="text-green-500">Extend</code> action can push the expiry back out, per canary.</li>
+        <li><code class="text-green-500">severity</code> — used to prioritize alerts when one fires.</li>
+        <li><code class="text-green-500">verifierUrl</code> — optional; the endpoint the Engine calls when a canary of this type goes overdue (see below).</li>
+        <li><code class="text-green-500">defaultChannelIds</code> — ids of the channels (from the section above) that alerts route to by default.</li>
+      </ul>
+      <p class="mt-4 text-gray-400">
+        <code class="text-green-500">rules</code> let you override severity and channel per-field, based on a
+        canary's metadata — each rule names a <code class="text-green-500">field</code>,
+        <code class="text-green-500">operator</code>, and <code class="text-green-500">value</code> to match, plus
+        the <code class="text-green-500">severity</code> and <code class="text-green-500">channel</code> to use
+        when it matches.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Starting a canary</h2>
+      <p class="mt-3 text-gray-400" data-lang="csharp">
+        Call <code class="text-green-500">CreateCanaryAsync</code> at the point your job, workflow, or scheduled task
+        begins. <code class="text-green-500">CanaryType</code> must match a canary type you've configured in the
+        Admin App, and <code class="text-green-500">ReferenceId</code> identifies this specific run — use something
+        unique per execution, like a job ID.
+      </p>
+      <p class="mt-3 text-gray-400 hidden" data-lang="go">
+        Call <code class="text-green-500">CreateCanary</code> at the point your job, workflow, or scheduled task
+        begins. <code class="text-green-500">CanaryType</code> must match a canary type you've configured in the
+        Admin App, and <code class="text-green-500">ReferenceID</code> identifies this specific run — use something
+        unique per execution, like a job ID.
+      </p>
+      <p class="mt-3 text-gray-400 hidden" data-lang="rust">
+        Call <code class="text-green-500">create_canary</code> at the point your job, workflow, or scheduled task
+        begins. <code class="text-green-500">canary_type</code> must match a canary type you've configured in the
+        Admin App, and <code class="text-green-500">reference_id</code> identifies this specific run — use something
+        unique per execution, like a job ID.
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200" data-lang="csharp"><code>{`var client = new CrashguardClient(new RestClient("http://localhost:8050"));
+
+var canary = await client.CreateCanaryAsync(new CreateCanaryRequest
+{
+    CanaryType = "nightly-export",
+    ReferenceId = jobId,
+    Metadata = new { triggeredBy = "scheduler" },
+});`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="go"><code>{`client, err := crashguard.New("http://localhost:8050", nil)
+if err != nil {
+    log.Fatal(err)
+}
+
+canary, err := client.CreateCanary(ctx, crashguard.CreateCanaryRequest{
+    CanaryType:  "nightly-export",
+    ReferenceID: jobID,
+    Metadata:    map[string]any{"triggeredBy": "scheduler"},
+})`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="rust"><code>{`let client = Client::new("http://localhost:8050")?;
+
+let canary = client
+    .create_canary(CreateCanaryRequest {
+        canary_type: "nightly-export".to_string(),
+        reference_id: job_id.clone(),
+        metadata: Some(json!({ "triggeredBy": "scheduler" })),
+    })
+    .await?;`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        The Engine starts a countdown based on the canary type's configured timeout. If the canary isn't resolved
+        before it expires, the Engine treats it as overdue and either fires alerts or calls a verifier, if one is
+        configured.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Checkpointing a canary</h2>
+      <p class="mt-3 text-gray-400">
+        Checkpoints record intermediate progress without affecting the canary's expiry. Use them to leave a trail of
+        what stage a long-running job reached, useful when triaging a triggered canary later.
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200" data-lang="csharp"><code>{`await client.CheckpointCanaryAsync(
+    "nightly-export",
+    jobId,
+    stage: "uploaded-to-s3",
+    metadata: new { rowCount = 41_203 });`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="go"><code>{`_, err = client.CheckpointCanary(ctx, "nightly-export", jobID, "uploaded-to-s3", map[string]any{
+    "rowCount": 41203,
+})`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="rust"><code>{`client
+    .checkpoint_canary(
+        "nightly-export",
+        &job_id,
+        "uploaded-to-s3",
+        Some(json!({ "rowCount": 41_203 })),
+    )
+    .await?;`}</code></pre>
+      <p class="mt-4 text-gray-400" data-lang="csharp">
+        If a job runs longer than expected but is still making progress, call
+        <code class="text-green-500">PulseCanaryAsync</code> instead to push the expiry back out by the canary
+        type's timeout, without marking a checkpoint.
+      </p>
+      <p class="mt-4 text-gray-400 hidden" data-lang="go">
+        If a job runs longer than expected but is still making progress, call
+        <code class="text-green-500">PulseCanary</code> instead to push the expiry back out by the canary
+        type's timeout, without marking a checkpoint.
+      </p>
+      <p class="mt-4 text-gray-400 hidden" data-lang="rust">
+        If a job runs longer than expected but is still making progress, call
+        <code class="text-green-500">pulse_canary</code> instead to push the expiry back out by the canary
+        type's timeout, without marking a checkpoint.
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200" data-lang="csharp"><code>{`await client.PulseCanaryAsync("nightly-export", jobId);`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="go"><code>{`_, err = client.PulseCanary(ctx, "nightly-export", jobID)`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="rust"><code>{`client.pulse_canary("nightly-export", &job_id).await?;`}</code></pre>
+      <p class="mt-4 text-gray-400" data-lang="csharp">
+        Each pulse sets the canary's <code class="text-green-500">ExpiresAt</code> to now plus the canary type's
+        timeout, the same way starting the canary did. Call it from inside a long-running loop — e.g. once per batch
+        or every few minutes — so the Engine doesn't flag the job as overdue while it's still healthy and working.
+        Pulsing doesn't record any progress trail; pair it with
+        <code class="text-green-500">CheckpointCanaryAsync</code> if you also want that.
+      </p>
+      <p class="mt-4 text-gray-400 hidden" data-lang="go">
+        Each pulse sets the canary's <code class="text-green-500">ExpiresAt</code> to now plus the canary type's
+        timeout, the same way starting the canary did. Call it from inside a long-running loop — e.g. once per batch
+        or every few minutes — so the Engine doesn't flag the job as overdue while it's still healthy and working.
+        Pulsing doesn't record any progress trail; pair it with
+        <code class="text-green-500">CheckpointCanary</code> if you also want that.
+      </p>
+      <p class="mt-4 text-gray-400 hidden" data-lang="rust">
+        Each pulse sets the canary's <code class="text-green-500">ExpiresAt</code> to now plus the canary type's
+        timeout, the same way starting the canary did. Call it from inside a long-running loop — e.g. once per batch
+        or every few minutes — so the Engine doesn't flag the job as overdue while it's still healthy and working.
+        Pulsing doesn't record any progress trail; pair it with
+        <code class="text-green-500">checkpoint_canary</code> if you also want that.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Resolving a canary</h2>
+      <p class="mt-3 text-gray-400" data-lang="csharp">
+        Call <code class="text-green-500">ResolveCanaryAsync</code> once the job completes successfully. A resolved
+        canary is done — it won't be checked for expiry again.
+      </p>
+      <p class="mt-3 text-gray-400 hidden" data-lang="go">
+        Call <code class="text-green-500">ResolveCanary</code> once the job completes successfully. A resolved
+        canary is done — it won't be checked for expiry again.
+      </p>
+      <p class="mt-3 text-gray-400 hidden" data-lang="rust">
+        Call <code class="text-green-500">resolve_canary</code> once the job completes successfully. A resolved
+        canary is done — it won't be checked for expiry again.
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200" data-lang="csharp"><code>await client.ResolveCanaryAsync("nightly-export", jobId);</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="go"><code>{`_, err = client.ResolveCanary(ctx, "nightly-export", jobID)`}</code></pre>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200 hidden" data-lang="rust"><code>{`client.resolve_canary("nightly-export", &job_id).await?;`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        If the job fails outright, don't resolve it — just let the canary expire, or trigger it manually from the
+        Admin App. An unresolved, expired canary is exactly what should alert you.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Adding a verifier</h2>
+      <p class="mt-3 text-gray-400">
+        A verifier is your own HTTP endpoint, set as <code class="text-green-500">VerifierUrl</code> on a canary
+        type. Instead of immediately triggering an alert when a canary expires, the Engine calls your verifier first
+        and lets it decide what should happen — useful when "didn't check in on time" doesn't always mean "actually
+        failed."
+      </p>
+      <p class="mt-4 text-gray-400">
+        When a canary of that type goes overdue, the Engine sends an HTTP <code class="text-green-500">POST</code> to
+        your verifier URL with this body:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`{
+  "canaryType": "nightly-export",
+  "referenceId": "job-48213",
+  "status": "Pending",
+  "startedAt": "2026-06-23T02:00:00Z",
+  "expiresAt": "2026-06-23T02:30:00Z",
+  "extendCount": 0,
+  "metadata": { "triggeredBy": "scheduler" }
+}`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        Your verifier must respond with a JSON body naming one of three actions:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`{ "action": "Trigger" }`}</code></pre>
+      <ul class="mt-4 text-gray-400 list-disc list-inside space-y-2">
+        <li>
+          <code class="text-green-500">Trigger</code> — the job actually failed. The Engine marks the canary
+          triggered and fires alerts as configured.
+        </li>
+        <li>
+          <code class="text-green-500">Extend</code> — give it more time. The Engine pushes the expiry out by the
+          canary type's timeout and increments <code class="text-green-500">extendCount</code>, up to the type's
+          configured extend limit.
+        </li>
+        <li>
+          <code class="text-green-500">Resolve</code> — the underlying work actually completed, it just never
+          called back. The Engine marks the canary resolved as if your service had called
+          <code class="text-green-500" data-lang="csharp">ResolveCanaryAsync</code>
+          <code class="text-green-500 hidden" data-lang="go">ResolveCanary</code>
+          <code class="text-green-500 hidden" data-lang="rust">resolve_canary</code>
+          itself.
+        </li>
+      </ul>
+      <p class="mt-4 text-gray-400">
+        A common pattern: have the verifier check the actual system the canary is watching (a queue depth, an S3
+        object's last-modified time, a downstream API) rather than trusting the absence of a check-in alone.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'cg-doc-lang'
+    const langs = ['csharp', 'go', 'rust']
+
+    function setLang(lang: string) {
+      if (!langs.includes(lang)) lang = 'csharp'
+
+      document.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => {
+        el.classList.toggle('hidden', el.dataset.lang !== lang)
+      })
+
+      document.querySelectorAll<HTMLElement>('[data-lang-btn]').forEach((btn) => {
+        const active = btn.dataset.langBtn === lang
+        btn.classList.toggle('bg-green-600', active)
+        btn.classList.toggle('text-white', active)
+        btn.classList.toggle('bg-gray-800', !active)
+        btn.classList.toggle('text-gray-400', !active)
+      })
+
+      localStorage.setItem(STORAGE_KEY, lang)
+    }
+
+    document.querySelectorAll<HTMLElement>('[data-lang-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => setLang(btn.dataset.langBtn ?? 'csharp'))
+    })
+
+    setLang(localStorage.getItem(STORAGE_KEY) ?? 'csharp')
+  </script>
+</Layout>

@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+---
+
+<Layout title="Get Started — CrashGuard.io">
+  <SiteHeader />
+  <main class="pt-16">
+    <section class="max-w-3xl mx-auto px-6 pt-24 pb-12 text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold text-white tracking-tight">Get Started</h1>
+      <p class="mt-6 text-lg text-gray-400">
+        <span class="text-green-500 font-semibold">CrashGuard</span> ships as a single Docker image containing the
+        Engine API and the Admin App. Pull it, run it, and you're tracking canaries in minutes.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">1. Pull the image</h2>
+      <p class="mt-3 text-gray-400">
+        The image is published to Docker Hub on every release.
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker pull russellcurry/crashguard.io:latest</code></pre>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">2. Run it</h2>
+      <p class="mt-3 text-gray-400">
+        The container exposes two ports: <code class="text-green-500">80</code> for the Admin App (nginx) and
+        <code class="text-green-500">5050</code> for the Engine API. Map them to whatever host ports you'd like:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker run -d \
+  --name crashguard \
+  -p 8080:80 \
+  -p 8050:5050 \
+  -v crashguard-data:/data \
+  russellcurry/crashguard.io:latest</code></pre>
+      <p class="mt-4 text-gray-400">
+        Once it's running, open <code class="text-green-500">http://localhost:8080</code> for the Admin App. Point
+        your services at <code class="text-green-500">http://localhost:8050</code> to create, checkpoint, and
+        resolve canaries.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">3. Persisting data</h2>
+      <p class="mt-3 text-gray-400">
+        <span class="text-green-500 font-semibold">CrashGuard</span> stores everything in a SQLite database at
+        <code class="text-green-500">/data/crashguard.db</code> inside the container. That path is declared as a
+        Docker volume, so your data survives container restarts and recreation <span class="text-white">even if you
+        don't specify a volume yourself</span> — Docker will create an anonymous one for you.
+      </p>
+      <p class="mt-4 text-gray-400">
+        Mounting your own data directory is optional, but recommended — it makes the database easy to find, back
+        up, or move to a new host:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker run -d \
+  --name crashguard \
+  -p 8080:80 \
+  -p 8050:5050 \
+  -v /home/me/crashguard-data:/data \
+  russellcurry/crashguard.io:latest</code></pre>
+      <p class="mt-4 text-gray-400">
+        Either way, <span class="text-white">don't run with <code class="text-green-500">--rm</code></span> if you
+        rely on the anonymous volume — removing the container without a named or bind-mounted volume can leave you
+        without an easy way to locate your data afterward.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-24">
+      <h2 class="text-2xl font-bold text-white tracking-tight">4. docker-compose, if you prefer</h2>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>services:
+  crashguard:
+    image: russellcurry/crashguard.io:latest
+    ports:
+      - "8080:80"
+      - "8050:5050"
+    volumes:
+      - crashguard-data:/data
+
+volumes:
+  crashguard-data:</code></pre>
+      <p class="mt-4 text-gray-400">
+        Run it with <code class="text-green-500">docker compose up -d</code>.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-24">
+      <h2 class="text-2xl font-bold text-white tracking-tight">5. Set the admin portal URL</h2>
+      <p class="mt-3 text-gray-400">
+        Open the Admin App and go to <span class="text-white">Settings</span>, then set
+        <span class="text-white">Admin portal URL</span> to whatever address you actually use to reach it in your
+        browser — in the examples above, that's <code class="text-green-500">http://localhost:8080</code>.
+      </p>
+      <img
+        src="/cg-admin-portal-settings.png"
+        alt="The CrashGuard Admin App Settings page, with the Admin portal URL field set and an explanation of why it's needed"
+        width="1077"
+        height="773"
+        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <p class="mt-4 text-gray-400">
+        This isn't optional cosmetics — alerts (Slack, email, etc.) use it to link directly to the canary that
+        triggered them. Without it, alerts have no way to point you anywhere useful.
+      </p>
+      <p class="mt-4 text-gray-400">
+        The Engine can't figure this out on its own. It runs in the same container as the Admin App, behind an
+        internal reverse proxy, so it only ever sees its own internal ports — it has no visibility into whatever
+        host port you mapped with <code class="text-green-500">-p</code> when you started the container. If you
+        remap ports (as in the examples above, where <code class="text-green-500">80</code> is exposed as
+        <code class="text-green-500">8080</code>), this field is the only place that mapping is recorded — leave it
+        blank and alerts simply omit the link rather than guess wrong.
+      </p>
+    </section>
+  </main>
+</Layout>

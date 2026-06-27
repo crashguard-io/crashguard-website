@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+---
+
+<Layout title="GitHub — CrashGuard.io">
+  <SiteHeader />
+  <main class="pt-16">
+    <section class="max-w-3xl mx-auto px-6 pt-24 pb-12 text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold text-white tracking-tight">GitHub</h1>
+      <p class="mt-6 text-lg text-gray-400">
+        <span class="text-green-500 font-semibold">CrashGuard</span> is open source under LGPL3. All repositories
+        live under the
+        <a href="https://github.com/orgs/crashguard-io/repositories" class="text-green-400 hover:text-green-300 underline">
+          crashguard-io GitHub organization
+        </a>.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-16">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Repositories</h2>
+
+      <div class="mt-6 space-y-6">
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
+          <h3 class="text-white font-semibold text-lg font-mono">crashguard-system</h3>
+          <p class="mt-2 text-gray-400 text-sm">
+            The core monorepo — the Engine, the Admin App, and the .NET SDK, plus a workflow simulator used in
+            development. Contains:
+          </p>
+          <ul class="mt-3 space-y-2 text-sm text-gray-400 list-disc list-inside">
+            <li><span class="text-gray-300 font-mono">crashguard-engine</span> — the .NET backend that tracks canaries, evaluates verifiers, expires overdue canaries, and routes alerts to notification connectors.</li>
+            <li><span class="text-gray-300 font-mono">crashguard-app</span> — the React/TypeScript admin dashboard for creating canary types, configuring verifiers and alerting rules, and managing notification channels.</li>
+            <li><span class="text-gray-300 font-mono">crashguard-client</span> — the C# SDK for creating, checkpointing, and resolving canaries from .NET applications.</li>
+            <li><span class="text-gray-300 font-mono">crashguard-common</span> — shared DTOs and models used by both the Engine and the C# client.</li>
+            <li><span class="text-gray-300 font-mono">crashguard-sim</span> — a simulator that drives fake workflows against the Engine, used for local testing and demos.</li>
+          </ul>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
+          <h3 class="text-white font-semibold text-lg font-mono">crashguard-client-go</h3>
+          <p class="mt-2 text-gray-400 text-sm">
+            The Go SDK for creating, checkpointing, and resolving canaries from Go applications.
+          </p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
+          <h3 class="text-white font-semibold text-lg font-mono">crashguard-client-rust</h3>
+          <p class="mt-2 text-gray-400 text-sm">
+            The Rust SDK for creating, checkpointing, and resolving canaries from Rust applications.
+          </p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
+          <h3 class="text-white font-semibold text-lg font-mono">crashguard-streamdeck</h3>
+          <p class="mt-2 text-gray-400 text-sm">
+            An Elgato Stream Deck plugin that lets you monitor canary status and trigger Engine actions directly
+            from a physical Stream Deck console.
+          </p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-700 rounded-xl p-6">
+          <h3 class="text-white font-semibold text-lg font-mono">crashguard-website</h3>
+          <p class="mt-2 text-gray-400 text-sm">
+            This site — crashguard.io.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

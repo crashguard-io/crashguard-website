@@ -1,0 +1,187 @@
+---
+import Layout from '../layouts/Layout.astro'
+import SiteHeader from '../components/SiteHeader.astro'
+---
+
+<Layout title="Stream Deck XL+ Integration — CrashGuard.io">
+  <SiteHeader />
+
+  <main class="pt-16">
+    <section class="max-w-3xl mx-auto px-6 py-24 text-center">
+      <p class="text-green-400 font-medium text-sm uppercase tracking-wider">Integration</p>
+      <h1 class="mt-4 text-4xl sm:text-5xl font-bold text-white tracking-tight">
+        Put your alerts on your desk.
+      </h1>
+      <p class="mt-6 text-lg text-gray-400">
+        <span class="text-green-500 font-semibold">CrashGuard</span> ships with a native Elgato Stream Deck XL+ integration, turning your 36-key panel
+        into a real-time status board for every canary type you've configured, no need to keep a browser tab open.
+      </p>
+    </section>
+
+    <section class="max-w-2xl mx-auto px-6 pb-24">
+      <img
+        src="/cg-stream-deck-1.png"
+        alt="CrashGuard on a Stream Deck XL+, showing canary status keys, live bar charts, and system status dials"
+        width="741"
+        height="686"
+        class="w-full h-auto opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <p class="mt-4 text-center text-xs text-gray-500">
+        Simulated layout — each key shows its canary type, with live status and trend keys underneath.
+      </p>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 pb-24 grid sm:grid-cols-2 gap-8">
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+        <h2 class="text-white font-semibold text-lg">Live status, one key per canary type</h2>
+        <p class="mt-2 text-gray-400 text-sm">
+          Assign any canary type to a key on your Stream Deck XL+. The key glows green while everything is
+          healthy, amber when a canary is at risk, and red the instant one expires — visible at a glance without switching windows.
+        </p>
+      </div>
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+        <h2 class="text-white font-semibold text-lg">The 6 dynamic dials</h2>
+        <p class="mt-2 text-gray-400 text-sm">
+          Use the XL+'s touch strip and dials to drill into a canary type's stats, like currently pending,
+          total resolved, triggered, at risk, and so on.
+        </p>
+      </div>
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+        <h2 class="text-white font-semibold text-lg">One-tap acknowledge and resolve</h2>
+        <p class="mt-2 text-gray-400 text-sm">
+          Tap a key on your stream deck to instantly access the admin portal and the information
+          relevant to the configured alart / canary.
+        </p>
+      </div>
+      <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+        <h2 class="text-white font-semibold text-lg">Per-profile layouts</h2>
+        <p class="mt-2 text-gray-400 text-sm">
+          Build a different key layout per on-call rotation or per environment — production canaries on
+          one Stream Deck profile, staging on another, switchable with a single folder key.
+        </p>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-24 text-center">
+      <h2 class="text-2xl font-semibold text-white">Requires a Stream Deck XL+</h2>
+      <p class="mt-4 text-gray-400">
+        The <span class="text-green-500 font-semibold">CrashGuard</span> plugin is built specifically for the XL+'s 36-key layout and 6 touch dials. Install
+        it from the Elgato Marketplace, point it at your self-hosted engine, and your keys will light up
+        within seconds.
+      </p>
+      <div class="mt-8">
+        <a href="#" class="px-6 py-3 rounded bg-green-600 hover:bg-green-500 text-white font-medium transition-colors inline-block">
+          Get the Plugin
+        </a>
+      </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-24">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Sideloading from source</h2>
+      <p class="mt-3 text-gray-400">
+        Not on the Marketplace yet, or want to run a development build? The plugin's source is public on
+        <a href="https://github.com/crashguard-io/crashguard-streamdeck" class="text-green-500 hover:text-green-400">GitHub</a>.
+        This plugin targets Stream Deck's SDK v2, which sideloads through Elgato's official CLI rather than an
+        in-app setting — install it once, then enable Developer Mode from a terminal:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`npm install -g @elgato/cli
+streamdeck dev`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        Then clone and build the plugin:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>{`git clone https://github.com/crashguard-io/crashguard-streamdeck.git
+cd crashguard-streamdeck
+npm install
+npm run build`}</code></pre>
+      <p class="mt-4 text-gray-400">
+        With Developer Mode on, link the built <code class="text-green-500">io.crashguard.streamdeck.sdPlugin</code>
+        folder into Stream Deck:
+      </p>
+      <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>streamdeck link io.crashguard.streamdeck.sdPlugin</code></pre>
+      <p class="mt-4 text-gray-400">
+        <span class="text-white">CrashGuard</span> will appear in your actions list, ready to drag onto a key. If
+        you're actively developing the plugin, run <code class="text-green-500">npm run watch</code> instead of
+        <code class="text-green-500">npm run build</code> — it rebuilds and restarts the linked plugin automatically
+        on every change.
+      </p>
+      <p class="mt-4 text-gray-400">
+        <code class="text-green-500">streamdeck link</code> creates a symlink, which is convenient while developing
+        but means the plugin disappears if you delete or move the cloned repo. To deploy a standalone copy instead —
+        for example onto a machine that doesn't have the source checked out — copy the built
+        <code class="text-green-500">io.crashguard.streamdeck.sdPlugin</code> folder directly into Stream Deck's
+        plugins directory instead of linking it. Developer Mode still needs to be on, and the Stream Deck app should
+        be closed while you copy:
+      </p>
+      <ul class="mt-4 text-gray-400 list-disc list-inside space-y-2">
+        <li>
+          <span class="text-white">Windows</span> —
+          <code class="text-green-500">%appdata%\Elgato\StreamDeck\Plugins\</code>
+        </li>
+        <li>
+          <span class="text-white">macOS</span> —
+          <code class="text-green-500">~/Library/Application Support/com.elgato.StreamDeck/Plugins/</code>
+        </li>
+      </ul>
+      <p class="mt-4 text-gray-400">
+        Relaunch the Stream Deck app afterward and the plugin will load from that copy. Note that since it's no
+        longer linked, picking up a newer build means repeating the copy — delete the old
+        <code class="text-green-500">io.crashguard.streamdeck.sdPlugin</code> folder from the plugins directory and
+        copy the freshly built one back in.
+      </p>
+    </section>
+
+    <section class="max-w-3xl mx-auto px-6 pb-24">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Configuring the plugin</h2>
+      <p class="mt-3 text-gray-400">
+        Once installed, open the Stream Deck app's <span class="text-white">Preferences → Plugins</span> tab and
+        select <span class="text-white">CrashGuard</span> in the sidebar. Click the link under
+        <span class="text-white">Helpful links</span> — it opens the plugin's local configuration page in your
+        browser.
+      </p>
+      <img
+        src="/cg-stream-deck-options-1.png"
+        alt="Stream Deck Preferences, Plugins tab, with CrashGuard selected and its Helpful links URL highlighted"
+        width="742"
+        height="501"
+        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <p class="mt-4 text-gray-400">
+        From there, set both URLs the plugin needs to talk to your self-hosted instance:
+      </p>
+      <img
+        src="/cg-stream-deck-options-2.png"
+        alt="CrashGuard plugin configuration page with fields for the Engine URL and the App URL"
+        width="974"
+        height="562"
+        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300"
+        loading="eager"
+        decoding="async"
+        onload="this.classList.remove('opacity-0')"
+      />
+      <ul class="mt-4 text-gray-400 list-disc list-inside space-y-2">
+        <li>
+          <span class="text-white">Engine URL</span> — where the <code class="text-green-500">crashguard-engine</code>
+          API is reachable, e.g. <code class="text-green-500">http://localhost:5050</code>. The plugin polls this
+          directly to read canary status for your keys and dials.
+        </li>
+        <li>
+          <span class="text-white">App URL</span> — where the <code class="text-green-500">crashguard-app</code> web
+          UI is reachable, e.g. <code class="text-green-500">http://localhost:5173</code>. The plugin opens this URL
+          when you tap a key to jump straight to the triggered canary.
+        </li>
+      </ul>
+      <p class="mt-4 text-gray-400">
+        Both default to <code class="text-green-500">localhost</code> with the default ports, which only works if
+        the plugin runs on the same machine as your CrashGuard instance with ports left unmapped. If you're running
+        CrashGuard in Docker with remapped ports, or on a different machine entirely, update both fields to match
+        wherever you can actually reach the Engine and Admin App from this computer.
+      </p>
+    </section>
+  </main>
+</Layout>
