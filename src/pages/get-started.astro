@@ -25,12 +25,12 @@ import SiteHeader from '../components/SiteHeader.astro'
     <section class="max-w-3xl mx-auto px-6 pb-16">
       <h2 class="text-2xl font-bold text-white tracking-tight">2. Run it</h2>
       <p class="mt-3 text-gray-400">
-        The container exposes two ports: <code class="text-green-500">80</code> for the Admin App (nginx) and
+        The container exposes two ports: <code class="text-green-500">8080</code> for the Admin App (nginx) and
         <code class="text-green-500">5050</code> for the Engine API. Map them to whatever host ports you'd like:
       </p>
       <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker run -d \
   --name crashguard \
-  -p 8080:80 \
+  -p 8080:8080 \
   -p 8050:5050 \
   -v crashguard-data:/data \
   crashguardinc/crashguard.io:latest</code></pre>
@@ -55,7 +55,7 @@ import SiteHeader from '../components/SiteHeader.astro'
       </p>
       <pre class="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 overflow-x-auto text-sm text-gray-200"><code>docker run -d \
   --name crashguard \
-  -p 8080:80 \
+  -p 8080:8080 \
   -p 8050:5050 \
   -v /home/me/crashguard-data:/data \
   crashguardinc/crashguard.io:latest</code></pre>
@@ -72,7 +72,7 @@ import SiteHeader from '../components/SiteHeader.astro'
   crashguard:
     image: crashguardinc/crashguard.io:latest
     ports:
-      - "8080:80"
+      - "8080:8080"
       - "8050:5050"
     volumes:
       - crashguard-data:/data
@@ -109,8 +109,8 @@ volumes:
         The Engine can't figure this out on its own. It runs in the same container as the Admin App, behind an
         internal reverse proxy, so it only ever sees its own internal ports — it has no visibility into whatever
         host port you mapped with <code class="text-green-500">-p</code> when you started the container. If you
-        remap ports (as in the examples above, where <code class="text-green-500">80</code> is exposed as
-        <code class="text-green-500">8080</code>), this field is the only place that mapping is recorded — leave it
+        remap ports (as in the examples above, where the internal nginx port <code class="text-green-500">8080</code>
+        is exposed as <code class="text-green-500">8080</code> on the host), this field is the only place that mapping is recorded — leave it
         blank and alerts simply omit the link rather than guess wrong.
       </p>
     </section>
