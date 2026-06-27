@@ -31,18 +31,16 @@ import SiteHeader from '../components/SiteHeader.astro'
         PagerDuty, or email) with that connector's config, like a webhook URL or integration key. Create channels
         from the Admin App's channel editor, then attach them to a canary type so its alerts route there.
       </p>
-      <a href="/cg-create-channel.png" target="_blank" rel="noopener">
       <img
         src="/cg-create-channel.png"
         alt="The CrashGuard Admin App channel editor, creating a Slack channel with a webhook URL"
         width="2006"
         height="1392"
-        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300 cursor-zoom-in"
+        class="lightbox-img mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300 cursor-zoom-in"
         loading="eager"
         decoding="async"
         onload="this.classList.remove('opacity-0')"
       />
-      </a>
       <p class="mt-4 text-gray-400">
         Under the hood, this calls <code class="text-green-500">POST /api/channels</code> with a name, a connector
         type, and that connector's config:
@@ -76,18 +74,16 @@ import SiteHeader from '../components/SiteHeader.astro'
         it's overdue, its severity, and which channels it alerts through by default. Canaries you start from the
         SDK reference a canary type by name.
       </p>
-      <a href="/cg-create-canary.png" target="_blank" rel="noopener">
       <img
         src="/cg-create-canary.png"
         alt="The CrashGuard Admin App canary type editor, configuring a timeout, severity, and default channels"
         width="2006"
         height="1392"
-        class="mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300 cursor-zoom-in"
+        class="lightbox-img mt-4 w-full h-auto rounded-lg border border-gray-700 opacity-0 transition-opacity duration-300 cursor-zoom-in"
         loading="eager"
         decoding="async"
         onload="this.classList.remove('opacity-0')"
       />
-      </a>
       <p class="mt-4 text-gray-400">
         Under the hood, this calls <code class="text-green-500">POST /api/canary-types</code>:
       </p>
